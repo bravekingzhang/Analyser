@@ -14,12 +14,15 @@ import test.tencent.com.test.R;
 
 /**
  * A placeholder fragment containing a simple view.
+ * 验证 AsyncTask  内存泄露。
  */
 public class SecondActivityFragment extends Fragment {
 
     public static final String TAG = SecondActivityFragment.class.getSimpleName();
 
     TextView mTextView;
+
+    MyAsyncTask myAsyncTask;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -46,9 +49,14 @@ public class SecondActivityFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         Log.e(TAG, "onDetach: excuted!");
+        //myAsyncTask.cancel(true);
+
     }
 
     private void startAsyncTask() {
+        //myAsyncTask = new MyAsyncTask();
+        //myAsyncTask.execute(1);
+        //fragment onDetach 的时候，不结束AsyncTask，是会造成良性的内存泄露的，只有等任务执行完之后，才能回收。如果按照上面写，且在onDetach中去cancel这个不结束AsyncTask，是不会造成泄漏的。
         new MyAsyncTask().execute(1);
     }
 
@@ -85,11 +93,10 @@ public class SecondActivityFragment extends Fragment {
             // do long time task,
             try {
                 int i = 0;
-
-                while (i<3){
+                while (i < 3) {
                     Thread.sleep(5000);
                     i++;
-                    Log.e(TAG, "doInBackground: sleep time"+i);
+                    Log.e(TAG, "doInBackground: sleep time" + i);
                 }
             } catch ( InterruptedException e ) {
                 e.printStackTrace();

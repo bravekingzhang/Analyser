@@ -13,11 +13,26 @@ import rx.Subscriber;
 public class RxTest {
 
 
-    public  Observable<String> testRx(){
-       return Observable.create(new Observable.OnSubscribe<String>() {
+   /* public  Observable<String> testRx1(){
+        return Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(final Subscriber<? super String> subscriber) {
 
+                        //正确的写法，在外面做线程切换
+                        String result = longTimeTask();
+                        subscriber.onNext(result);
+                        subscriber.onCompleted();
+                    }
+        });
+
+    }*/
+
+    public Observable<String> testRx() {
+        return Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(final Subscriber<? super String> subscriber) {
+
+                //这么写就泄露了，线程的切换交给 Rx吧，这样它就可以替你管理线程
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -33,11 +48,11 @@ public class RxTest {
     }
 
 
-    private String longTimeTask(){
-        String result="";
-        int i=0;
+    private String longTimeTask() {
+        String result = "";
+        int i = 0;
         try {
-            while (i<50){
+            while (i < 50) {
                 i++;
                 Thread.sleep(1000);
                 Log.e("SecondActivity", "longTimeTask() called with: " + i);

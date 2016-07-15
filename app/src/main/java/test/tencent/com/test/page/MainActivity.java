@@ -14,8 +14,6 @@ import test.tencent.com.test.fragment.SecondActivityFragment;
 
 public class MainActivity extends AppCompatActivity {
 
-    Fragment fragment1;
-    Fragment fragment2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,15 +21,13 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        fragment1 = new MainActivityFragment();
-        fragment2 = new SecondActivityFragment();
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
-        getSupportFragmentManager().beginTransaction().replace(R.id.container,fragment1).commitAllowingStateLoss();
+        getSupportFragmentManager().beginTransaction().replace(R.id.container,new MainActivityFragment()).commitAllowingStateLoss();
     }
 
     @Override
@@ -51,10 +47,10 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         switch (id){
             case R.id.action1:
-                getSupportFragmentManager().beginTransaction().replace(R.id.container,fragment1).commitAllowingStateLoss();
+                getSupportFragmentManager().beginTransaction().replace(R.id.container,new MainActivityFragment()).commitAllowingStateLoss();
                 break;
             case R.id.action2:
-                getSupportFragmentManager().beginTransaction().replace(R.id.container,fragment2).commitAllowingStateLoss();
+                getSupportFragmentManager().beginTransaction().replace(R.id.container, new SecondActivityFragment()).commitAllowingStateLoss();
                 break;
             case R.id.action3:
                 startActivity(new Intent(this,SecondActivity.class));
