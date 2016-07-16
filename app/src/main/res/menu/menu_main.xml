@@ -14,4 +14,8 @@
           android:title="切换到activity"
           android:orderInCategory="100"
           app:showAsAction="never" />
+    <item android:id="@+id/action4"
+          android:title="切换到SurfaceView"
+          android:orderInCategory="100"
+          app:showAsAction="never" />
 </menu>
