@@ -1,4 +1,4 @@
-package test.tencent.com.test;
+package test.tencent.com.test.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;

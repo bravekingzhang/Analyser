@@ -16,9 +16,9 @@ import test.tencent.com.test.R;
  * A placeholder fragment containing a simple view.
  * 验证 AsyncTask  内存泄露。
  */
-public class SecondActivityFragment extends Fragment {
+public class SecondFragment extends Fragment {
 
-    public static final String TAG = SecondActivityFragment.class.getSimpleName();
+    public static final String TAG = SecondFragment.class.getSimpleName();
 
     TextView mTextView;
 

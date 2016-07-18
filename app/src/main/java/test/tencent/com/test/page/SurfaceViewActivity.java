@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
-import test.tencent.com.test.DrawView;
+import test.tencent.com.test.widget.DrawView;
 import test.tencent.com.test.R;
 
 /**

@@ -2,6 +2,11 @@
 <manifest package="test.tencent.com.test"
           xmlns:android="http://schemas.android.com/apk/res/android">
 
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"></uses-permission>
+    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -21,6 +26,11 @@
         <activity android:name=".page.SecondActivity">
         </activity>
         <activity android:name=".page.SurfaceViewActivity">
+        </activity>
+        <activity
+            android:name=".page.PainterActivity"
+            android:label="@string/title_activity_painter"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>
 

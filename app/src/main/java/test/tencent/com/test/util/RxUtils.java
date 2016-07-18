@@ -1,4 +1,4 @@
-package test.tencent.com.test;
+package test.tencent.com.test.util;
 
 
 import android.util.Log;
@@ -10,7 +10,7 @@ import rx.Subscriber;
  * Created by hoollyzhang on 16/7/14.
  * Description :
  */
-public class RxTest {
+public class RxUtils {
 
 
    /* public  Observable<String> testRx1(){

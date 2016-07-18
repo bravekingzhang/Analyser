@@ -9,7 +9,7 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 import test.tencent.com.test.R;
-import test.tencent.com.test.RxTest;
+import test.tencent.com.test.util.RxUtils;
 
 public class SecondActivity extends AppCompatActivity {
 
@@ -29,7 +29,7 @@ public class SecondActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        _subscription.add(new RxTest().testRx()
+        _subscription.add(new RxUtils().testRx()
                 .asObservable()
                 //.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
