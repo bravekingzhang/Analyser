@@ -6,10 +6,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -124,8 +126,10 @@ public class PainterActivity extends AppCompatActivity {
 
     //从群聊选择
     private void StartTakePhoto() {
-        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-        startActivityForResult(intent, 0);
+        Intent openCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        Uri imageUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "image.jpg"));
+        openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        startActivityForResult(openCameraIntent, 0);
     }
 
     //从相册选择
@@ -139,99 +143,86 @@ public class PainterActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        ContentResolver resolver = getContentResolver();
-        if (data != null) {
-            /**
-             * 因为两种方式都用到了startActivityForResult方法，这个方法执行完后都会执行onActivityResult方法
-             * ， 所以为了区别到底选择了那个方式获取图片要进行判断
-             * ，这里的requestCode跟startActivityForResult里面第二个参数对应 1== 相册 2 ==相机
-             */
-            if (requestCode == 1) {
+        /**
+         * 因为两种方式都用到了startActivityForResult方法，这个方法执行完后都会执行onActivityResult方法
+         * ， 所以为了区别到底选择了那个方式获取图片要进行判断
+         * ，这里的requestCode跟startActivityForResult里面第二个参数对应 1== 相册 2 ==相机
+         */
+        if (requestCode == 1 && data != null) {
 
+            try {
+                ContentResolver resolver = getContentResolver();
+                // 获得图片的uri
+                Uri originalUri = data.getData();
+                // 将图片内容解析成字节数组
+                byte[] mContent = readStream(resolver.openInputStream(Uri.parse(originalUri.toString())));
+                // 将字节数组转换为ImageView可调用的Bitmap对象
+                Bitmap myBitmap = getPicFromBytes(mContent, null);
+                // //把得到的图片绑定在控件上显示
+                imageView.setImageBitmap(myBitmap);
+            } catch ( Exception e ) {
+                System.out.println(e.getMessage());
+            }
+
+        } else if (requestCode == 0) {
+
+            Bitmap bitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory() + "/image.jpg");//这里的照片略微清晰很多
+            if (bitmap == null) {
+                return;
+            }
+            FileOutputStream fileOutputStream = null;
+            File directory = new File(Environment.getExternalStorageDirectory(), "test/image");
+            directory.mkdirs();// 创建文件夹，名称为myimage
+
+            // 照片的命名，目标文件夹下，以当前时间数字串为名称，即可确保每张照片名称不相同。
+            String fileName = directory.getAbsolutePath() + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".jpg";
+            try {
+                fileOutputStream = new FileOutputStream(fileName);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);// 把数据写入文件
+                Bitmap bitmapCamera = CommenUtils.createScaleBitmap(bitmap, 200 * 3, false);
+                imageView.setImageBitmap(bitmapCamera);
+                bitmap.recycle();//将原图赶紧回收，避免oom
+            } catch ( FileNotFoundException e ) {
+                e.printStackTrace();
+            } finally {
                 try {
-                    // 获得图片的uri
-                    Uri originalUri = data.getData();
-                    // 将图片内容解析成字节数组
-                    byte[] mContent = readStream(resolver.openInputStream(Uri.parse(originalUri.toString())));
-                    // 将字节数组转换为ImageView可调用的Bitmap对象
-                    Bitmap myBitmap = getPicFromBytes(mContent, null);
-                    // //把得到的图片绑定在控件上显示
-                    imageView.setImageBitmap(myBitmap);
-                } catch ( Exception e ) {
-                    System.out.println(e.getMessage());
-                }
-
-            } else if (requestCode == 0) {
-
-                String sdStatus = Environment.getExternalStorageState();
-                if (!sdStatus.equals(Environment.MEDIA_MOUNTED)) { // 检测sd是否可用
-                    return;
-                }
-                Bundle bundle = data.getExtras();
-                Bitmap bitmap = (Bitmap) bundle.get("data");// 获取相机返回的数据，并转换为Bitmap图片格式
-                FileOutputStream b = null;
-                File file = new File("/sdcard/myImage/");
-                file.mkdirs();// 创建文件夹，名称为myimage
-
-                // 照片的命名，目标文件夹下，以当前时间数字串为名称，即可确保每张照片名称不相同。
-                String str = null;
-                Date date = null;
-                SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");// 获取当前时间，进一步转化为字符串
-                date = new Date();
-                str = format.format(date);
-                String fileName = "/sdcard/myImage/" + str + ".jpg";
-                try {
-                    b = new FileOutputStream(fileName);
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, b);// 把数据写入文件
-                } catch ( FileNotFoundException e ) {
+                    fileOutputStream.flush();
+                    fileOutputStream.close();
+                } catch ( IOException e ) {
                     e.printStackTrace();
-                } finally {
-                    try {
-                        b.flush();
-                        b.close();
-                    } catch ( IOException e ) {
-                        e.printStackTrace();
-                    }
-                    if (data != null) {
-                        Bitmap cameraBitmap = (Bitmap) data.getExtras().get( "data");
-                        System.out.println("fdf================="+ data.getDataString());
-                        imageView.setImageBitmap(cameraBitmap);
-                        System.out.println("成功======" + cameraBitmap.getWidth()+ cameraBitmap.getHeight());
-                    }
-
                 }
             }
-            //一旦原始图片设置好，之后，看是生成图片轮廓，然后，在去绘图
-            if (imageView.getDrawable() instanceof BitmapDrawable) {
-                Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-                //将Bitmap压缩处理，防止OOM
-                Bitmap bm = CommenUtils.createScaleBitmap(bitmap, 400,false);
-                //返回的是处理过的Bitmap
-                _compositeSubscription.add(createSobelBitmap(bm)
-                        .subscribeOn(Schedulers.computation())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<Bitmap>() {
-                    @Override
-                    public void onCompleted() {
+        }
+        //一旦原始图片设置好，之后，看是生成图片轮廓，然后，在去绘图
+        if (imageView.getDrawable() instanceof BitmapDrawable) {
+            Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+            //将Bitmap压缩处理，防止OOM
+            Bitmap bm = CommenUtils.createScaleBitmap(bitmap, 200 * 3, false);
+            //返回的是处理过的Bitmap
+            _compositeSubscription.add(createSobelBitmap(bm)
+                    .subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<Bitmap>() {
+                        @Override
+                        public void onCompleted() {
 
-                    }
+                        }
 
-                    @Override
-                    public void onError(Throwable e) {
+                        @Override
+                        public void onError(Throwable e) {
 
-                    }
+                        }
 
-                    @Override
-                    public void onNext(Bitmap sobelBm) {
-                        drawOutlineView.setPaintBm(paintBm);
-                        drawOutlineView.setSobelBitMap(sobelBm);
-                    }
-                }));
-            }
+                        @Override
+                        public void onNext(Bitmap sobelBm) {
+                            drawOutlineView.setPaintBm(paintBm);
+                            drawOutlineView.setSobelBitMap(sobelBm);
+                        }
+                    }));
         }
     }
 
-    private Observable<Bitmap> createSobelBitmap(final Bitmap bm){
+    private Observable<Bitmap> createSobelBitmap(final Bitmap bm) {
         return Observable.create(new Observable.OnSubscribe<Bitmap>() {
             @Override
             public void call(Subscriber<? super Bitmap> subscriber) {
@@ -243,10 +234,9 @@ public class PainterActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     protected void onDestroy() {
-        if (!_compositeSubscription.isUnsubscribed()){
+        if (!_compositeSubscription.isUnsubscribed()) {
             _compositeSubscription.unsubscribe();
         }
         super.onDestroy();

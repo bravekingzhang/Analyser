@@ -56,7 +56,7 @@ public class PainterView extends SurfaceView implements SurfaceHolder.Callback {
 
     public void setSobelBitMap(Bitmap sobelBitMap){
         isDrawing = false;
-        beginDraw(getArray(sobelBitMap));
+        reDraw(getArray(sobelBitMap));
     }
 
     //根据Bitmap信息，获取每个位置的像素点是否需要绘制
