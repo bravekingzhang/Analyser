@@ -89,6 +89,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action5:
                 startActivity(new Intent(this,PainterActivity.class));
                 break;
+            case R.id.action6:
+                startActivity(new Intent(this,AopActivity.class));
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
