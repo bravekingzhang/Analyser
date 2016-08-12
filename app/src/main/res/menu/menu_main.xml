@@ -26,4 +26,12 @@
           android:title="AOP测试"
           android:orderInCategory="100"
           app:showAsAction="never" />
+    <item android:id="@+id/action7"
+          android:title="scroller测试"
+          android:orderInCategory="100"
+          app:showAsAction="never" />
+    <item android:id="@+id/action8"
+          android:title="aidl测试"
+          android:orderInCategory="100"
+          app:showAsAction="never" />
 </menu>

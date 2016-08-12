@@ -38,6 +38,21 @@
             android:label="@string/title_activity_aop"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+        <activity
+            android:name=".page.ScrollerPageText"
+            android:label="@string/title_activity_aop"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
+        <service
+            android:name=".MyService"
+            android:process=":remote"/>
+
+        <activity
+            android:name=".page.AidlActivity"
+            android:label="@string/title_activity_aidl"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>

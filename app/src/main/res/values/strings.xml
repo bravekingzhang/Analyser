@@ -3,4 +3,6 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_painter">PainterActivity</string>
     <string name="title_activity_aop">AopActivity</string>
+    <string name="title_activity_scroller">ScrollerActivity</string>
+    <string name="title_activity_aidl">AidlActivity</string>
 </resources>
