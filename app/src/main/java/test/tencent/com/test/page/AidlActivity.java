@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.RemoteException;
+import android.support.annotation.MainThread;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -14,18 +16,21 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
+import test.tencent.com.test.IOnNewBookArrivedListener;
 import test.tencent.com.test.IRemoteService;
 import test.tencent.com.test.MockUtils;
 import test.tencent.com.test.MyService;
 import test.tencent.com.test.R;
+import test.tencent.com.test.model.Book;
 
 public class AidlActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "AidlActivity";
 
-    TextView start, stop, add,list, delete;
+    TextView start, stop, add, list, delete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +90,7 @@ public class AidlActivity extends AppCompatActivity implements View.OnClickListe
         if (mIRemoteService != null) {
             try {
                 Log.e(TAG, "list() called with: " + mIRemoteService.getPid());
-                if(mIRemoteService.listBook().size()>0){
+                if (mIRemoteService.listBook().size() > 0) {
                     Log.e(TAG, "delete() called with: " + mIRemoteService.listBook().get(0).getId());
                     mIRemoteService.deleteBook(mIRemoteService.listBook().get(0).getId());
                 }
@@ -123,8 +128,15 @@ public class AidlActivity extends AppCompatActivity implements View.OnClickListe
         Log.e(TAG, "bindservie() called with: " + "");
     }
 
+
+    //清除callback
     private void unBindService() {
         if (mIRemoteService != null && mIRemoteService.asBinder().isBinderAlive()) {
+            try {
+                mIRemoteService.unregistOnNewBookArrived(mOnNewBookArrivedListener);
+            } catch ( RemoteException e ) {
+                e.printStackTrace();
+            }
             unbindService(mConnection);
         }
     }
@@ -142,6 +154,11 @@ public class AidlActivity extends AppCompatActivity implements View.OnClickListe
             // Following the example above for an AIDL interface,
             // this gets an instance of the IRemoteInterface, which we can use to call on the service
             mIRemoteService = IRemoteService.Stub.asInterface(service);
+            try {
+                mIRemoteService.registOnNewBookArrived(mOnNewBookArrivedListener);
+            } catch ( RemoteException e ) {
+                e.printStackTrace();
+            }
         }
 
         // Called when the connection with the service disconnects unexpectedly
@@ -150,5 +167,20 @@ public class AidlActivity extends AppCompatActivity implements View.OnClickListe
             mIRemoteService = null;
         }
     };
+
+    private IOnNewBookArrivedListener mOnNewBookArrivedListener = new IOnNewBookArrivedListener.Stub() {
+        @Override
+        public void onNewBookArrived(Book newBook) throws RemoteException {
+            if (Looper.myLooper() == Looper.getMainLooper()){
+                Log.e(TAG, "onNewBookArrived() called on mainthread");
+            }
+            makeToast("有一本新书添加" + newBook);
+        }
+    };
+
+    @MainThread
+    private void makeToast(String s) {
+        Toast.makeText(this, s, Toast.LENGTH_LONG).show();
+    }
 
 }

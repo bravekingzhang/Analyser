@@ -7,6 +7,7 @@ import android.os.Process;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,8 @@ public class MyService extends Service {
 
 
     private final List<Book> bookList = new ArrayList<>();
+
+    private RemoteCallbackList<IOnNewBookArrivedListener> mRemoteCallbackList = new RemoteCallbackList<>();
 
     private static final String TAG = "MyService";
 
@@ -40,6 +43,11 @@ public class MyService extends Service {
         public void addBook(Book book) throws RemoteException {
             synchronized (bookList) {
                 bookList.add(book);
+                int num = mRemoteCallbackList.beginBroadcast();
+                for (int i=0;i<num;i++){
+                    mRemoteCallbackList.getBroadcastItem(i).onNewBookArrived(book);
+                }
+                mRemoteCallbackList.finishBroadcast();//这里一定要写，不然，会出现called while already in a broadcast
             }
         }
 
@@ -60,6 +68,22 @@ public class MyService extends Service {
                     }
                 }
             }
+        }
+
+        @Override
+        public void registOnNewBookArrived(IOnNewBookArrivedListener listener) throws RemoteException {
+            mRemoteCallbackList.register(listener);
+            int num = mRemoteCallbackList.beginBroadcast();
+            Log.e(TAG, "registOnNewBookArrived() called with: " + "listener_num = [" + num + "]");
+            mRemoteCallbackList.finishBroadcast();
+        }
+
+        @Override
+        public void unregistOnNewBookArrived(IOnNewBookArrivedListener listner) throws RemoteException {
+            mRemoteCallbackList.unregister(listner);
+            int num = mRemoteCallbackList.beginBroadcast();
+            Log.e(TAG, "unregistOnNewBookArrived called with: " + "listener_num = [" + num + "]");
+            mRemoteCallbackList.finishBroadcast();
         }
 
     };

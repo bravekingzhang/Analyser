@@ -2,6 +2,7 @@
 package test.tencent.com.test;
 // Declare any non-default types here with import statements
 import test.tencent.com.test.model.Book;
+import test.tencent.com.test.IOnNewBookArrivedListener;
 
 interface IRemoteService {
     /**
@@ -18,5 +19,9 @@ interface IRemoteService {
     List<Book> listBook();
 
     void deleteBook(in int id);
+
+    void registOnNewBookArrived(IOnNewBookArrivedListener listener);
+
+    void unregistOnNewBookArrived(IOnNewBookArrivedListener listner);
 
 }
