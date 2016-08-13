@@ -18,7 +18,7 @@ interface IRemoteService {
 
     List<Book> listBook();
 
-    void deleteBook(in int id);
+    void deleteBook(int id);
 
     void registOnNewBookArrived(IOnNewBookArrivedListener listener);
 
