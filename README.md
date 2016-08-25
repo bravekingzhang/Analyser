@@ -8,7 +8,7 @@
 
 这里有一些比较有意思的 surfaceView 绘图测试
 
-这里有aop方案实现动态申请权限   文章在这里 [这里有aop方案实现动态申请权限](http://www.jianshu.com/p/ea4cc77bf984)
+
 
 这里有aidl的demo，作者在aidl实践中发现新手需要注意的几点：
 
