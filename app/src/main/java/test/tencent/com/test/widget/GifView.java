@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import test.tencent.com.test.R;
 import test.tencent.com.test.util.Utils;
 
+import static test.tencent.com.test.util.Utils.calculateInSampleSize;
 import static test.tencent.com.test.util.Utils.canUseForInBitmap;
 
 /**
@@ -178,7 +179,7 @@ public class GifView extends GLSurfaceView implements SurfaceHolder.Callback {
      * @return A bitmap sampled down from the original with the same aspect ratio and dimensions
      * that are equal to or greater than the requested width and height
      */
-    private Bitmap decodeSampledBitmapFromDescriptor(FileDescriptor fileDescriptor) {
+    private Bitmap decodeSampledBitmapFromDescriptor(FileDescriptor fileDescriptor,int reqWidth, int reqHeight) {
 
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
@@ -186,8 +187,8 @@ public class GifView extends GLSurfaceView implements SurfaceHolder.Callback {
         BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
 
         // Calculate inSampleSize
-        //options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-        options.inSampleSize = 1;
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+        //options.inSampleSize = 1;
 
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
@@ -200,6 +201,15 @@ public class GifView extends GLSurfaceView implements SurfaceHolder.Callback {
         return BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
     }
 
+
+
+    /**
+     * Decode and sample down a bitmap from a resource input ,with orgin width and height
+     *
+     * @param res The resource id
+     * @return A bitmap sampled down from the original with the same aspect ratio and dimensions
+     * that are equal to or greater than the requested width and height
+     */
     private Bitmap decodeSampledBitmapFromRes(@IdRes int res) {
 
         // First decode with inJustDecodeBounds=true to check dimensions
