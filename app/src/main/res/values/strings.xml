@@ -5,4 +5,5 @@
     <string name="title_activity_aop">AopActivity</string>
     <string name="title_activity_scroller">ScrollerActivity</string>
     <string name="title_activity_aidl">AidlActivity</string>
+    <string name="title_activity_surface_gif_view">SurfaceGifView</string>
 </resources>

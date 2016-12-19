@@ -34,4 +34,8 @@
           android:title="aidl测试"
           android:orderInCategory="100"
           app:showAsAction="never" />
+    <item android:id="@+id/action9"
+          android:title="SurfaceGif测试"
+          android:orderInCategory="100"
+          app:showAsAction="never" />
 </menu>

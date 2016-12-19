@@ -7,7 +7,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ScrollView;
 
 import test.tencent.com.test.fragment.FirstFragment;
 import test.tencent.com.test.R;
@@ -98,6 +97,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.action8:
                 startActivity(new Intent(this,AidlActivity.class));
+                break;
+            case R.id.action9:
+                startActivity(new Intent(this,SurfaceGifActivity.class));
                 break;
         }
         return super.onOptionsItemSelected(item);
